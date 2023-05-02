@@ -40,7 +40,7 @@
         messagingSenderId: "712072402216",
       };
       firebase.initializeApp(config);
-      console.log("Firebase initialised");
+      //console.log("Firebase initialised");
       const database = firebase.database().ref();
     </script>
 
@@ -91,20 +91,20 @@
 
     setInterval(function() { window.location.reload() }, 30000);
 
-      console.log("Debug - adding event listener");
+      //console.log("Debug - adding event listener");
       window.addEventListener("load", getData(genFunction));
 
       function getData(callbackIN) {     
-        console.log("Debug - Get Data");  
+        //console.log("Debug - Get Data");  
         database.once("value").then(function (snapshot) {
           callbackIN(snapshot.val());
         });
       }
 
       function genFunction(data) {
-        console.log("Debug - Gen Function");
-        console.log(Object.prototype.toString.call(data));
-        console.log(data);
+        //console.log("Debug - Gen Function");
+        //console.log(Object.prototype.toString.call(data));
+        //console.log(data);
         //data currently has structure as follows
         /*
           - Data Type
@@ -118,11 +118,11 @@
         {
           i = 1;
           //iterate through the data types in the list
-          console.log("Data type - ");
-          console.log(dataType);
+          //console.log("Data type - ");
+          //console.log(dataType);
             for (var devID in data[dataType]) {
-                console.log("Device ID - ");
-                console.log(devID);
+                //console.log("Device ID - ");
+                //console.log(devID);
                 var chartData = [];
                 var numbericData = [];
                 var sumData = [];
@@ -134,7 +134,7 @@
                 var totalTime = 0;
                 var totalTimeGranular = 0;
                 for (var sample in data[dataType][devID]) {
-                    //console.log(data[dataType][devID][sample]["label"]);
+                    ////console.log(data[dataType][devID][sample]["label"]);
                     chartData.push({
                         label: data[dataType][devID][sample]["label"],
                         value: data[dataType][devID][sample]["value"],
@@ -142,9 +142,9 @@
                     state = parseFloat(data[dataType][devID][sample]["value"])
                     time = Date.parse(data[dataType][devID][sample]["label"])
                     if (prevTime == 0) {
-                        console.log("Setting initial time");
+                        //console.log("Setting initial time");
                         prevTime = time;
-                        console.log(prevTime);
+                        //console.log(prevTime);
                     }
                     //sample to generate statistics for usage
                     if (generate_usage_statistics[dataType]) {
@@ -154,9 +154,9 @@
                             //console.log("State changed");
                             //console.log(state == 0);
                             if (state == 0) {//light on
-                                console.log("State change detected");
+                                //console.log("State change detected");
                                 totalTime = totalTime + time - prevTime;
-                                console.log(totalTime);
+                                //console.log(totalTime);
                             }
                             prevState = state;
                             prevTime = time;
@@ -201,7 +201,6 @@
             elemDiv.id = dataType + devID
             elemDiv.className = "row"
             elemDiv.innerHTML = `
-
         <svg
           width="90px"
           height="90px"
@@ -240,7 +239,6 @@
             let content = document.querySelector("#content")
               content.append(elemDiv);
                content.append(elemP)
-
 
             var firebaseChart = new FusionCharts({
               id: (dataType + devID) + "ID",
@@ -408,14 +406,54 @@
             }
           }
         }
-        }
+        var gaugeChart = new FusionCharts({
+          type: "bulb",
+                id: "bulbGauge",
+                renderAt: "gaugeChart",
+                width: "200",
+                height: "200",
+                dataFormat: "json",
+                dataSource: {
+                  chart: {
+                    caption: "Room Occupancy Status",
+                    upperlimit: "1",
+                    lowerlimit: "0",
+                    theme: "fusion"
+                  },
+                  colorrange:{
+                    color: [
+                  {
+                    minvalue: "0",
+                    maxvalue: "0",
+                    label: "Room Empty",
+                    code: "#FF0000"
+                  },
+                  {
+                  minvalue:"1",
+                  label: "Room Occupied",
+                  code: "#00FF00"
+                 }
+                ]
+                  },
+                  value: "1"
+              },
+              "events":{
+                "rendered": function(evtObj, argObj){
+                  setInterval(function() {
+                    var num = (Math.floor)
+                  })
+      }
+    }});
+    gaugeChart.render();
+        };
+
     </script>
   </head>
 
   <body class="container-fluid">
       <div class="row">
           <div class="col-xl-2 col-lg-1 col-md-1 col-sm-0"></div>
-          <div class="col-xl-8 col-lg-10 col-md-10 col-sm-12" id="content"></div>
+          <div class="col-xl-8 col-lg-10 col-md-10 col-sm-12" id="content"><div id="gaugeChart">Gauge will show here</div></div>
           <div class="col-xl-2 col-lg-1 col-md-1 col-sm-0"></div>
       </div>
   </body>
