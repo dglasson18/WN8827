@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>Real Time Sensor Data</title>
 
     <style>
@@ -10,16 +10,16 @@
             text-align: center;
         }
     </style>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" / >
-    <link rel="stylesheet" type="text/css" href="StyleSheet1.css"/ >
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="StyleSheet1.css" />
     <!-- Bootstraap -->
     <link rel="stylesheet"
-    href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-    crossorigin="anonymous" / >
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
-    crossorigin="anonymous" > </script >
+            integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+            crossorigin="anonymous"></script>
 
 
     <!-- including FusionCharts core package JS files -->
@@ -31,34 +31,37 @@
 
     <!-- Initialize Firebase -->
     <script>
-      var config = {
-        apiKey: "AIzaSyC6MlFy4Btor9bQ4a_RHh1fJhuefeWwjAo",
-        authDomain: "rpitest2-263a3.firebaseapp.com",
-        databaseURL: "https://rpitest2-263a3-default-rtdb.firebaseio.com/",
-        projectId: "rpitest2-263a3",
-        storageBucket: "rpitest2-263a3.appspot.com",
-        messagingSenderId: "712072402216",
-      };
-      firebase.initializeApp(config);
-      //console.log("Firebase initialised");
-      const database = firebase.database().ref();
+        var config = {
+            apiKey: "AIzaSyC6MlFy4Btor9bQ4a_RHh1fJhuefeWwjAo",
+            authDomain: "rpitest2-263a3.firebaseapp.com",
+            databaseURL: "https://rpitest2-263a3-default-rtdb.firebaseio.com/",
+            projectId: "rpitest2-263a3",
+            storageBucket: "rpitest2-263a3.appspot.com",
+            messagingSenderId: "712072402216",
+        };
+        firebase.initializeApp(config);
+        //console.log("Firebase initialised");
+        const database = firebase.database().ref();
     </script>
 
-    <script>  
+    <script>
+
       var y_label = {
         Temperature: "Temperature (C)",
         Light: "Light",
         Humidity: "Humidity (%)",
-        Room_Occupancy: "Room Occupied (1/Yes - 0/No)",
-        Aircon_Status: "Aircon (1/Heating - 0/Off - -1/Cooling"
-      } 
+        Room_Occupancy: "On/Off (1/0)",
+        Aircon_Status: "Cool/Off/Heat (-1/0/1)",
+        TemperatureControl: "Temperature (C)"
+      }
 
       var num_prefix = {
         Temperature: "Temp = ",
         Light: "Light = ",
         Humidity: "Humi = ",
         Room_Occupancy: "Status = ",
-        Aircon_Status: "Status = "
+        Aircon_Status: "Status = ",
+        TemperatureControl: "Control Temp = "
       }
 
       var y_min = {
@@ -66,7 +69,8 @@
         Light: "0",
         Humidity: "0",
         Room_Occupancy: "0",
-        Aircon_Status: "-1"
+        Aircon_Status: "-1",
+        TemperatureControl: "15"
       }
 
       var y_max = {
@@ -74,7 +78,17 @@
         Light: "1024",
         Humidity: "100",
         Room_Occupancy: "1",
-        Aircon_Status: "1"
+        Aircon_Status: "1",
+        TemperatureControl: "35"
+        }
+
+      var subtitle = {
+          Temperature: "Historical Room Temp",
+          Light: "Historical Room Light Level",
+          Humidity: "Historical Room Humidiy",
+          Room_Occupancy: "Historical Room Occupation",
+          Aircon_Status: "Historical Aircon Status",
+          TemperatureControl: "Historical Aircon Activation Point"
       }
 
       var generate_usage_statistics = {
@@ -94,8 +108,8 @@
       //console.log("Debug - adding event listener");
       window.addEventListener("load", getData(genFunction));
 
-      function getData(callbackIN) {     
-        //console.log("Debug - Get Data");  
+      function getData(callbackIN) {
+        //console.log("Debug - Get Data");
         database.once("value").then(function (snapshot) {
           callbackIN(snapshot.val());
         });
@@ -169,7 +183,7 @@
                             lastTime = time;
                           }
                           totalTimeGranular = totalTimeGranular + time - lastTime;
-                          
+
                           //console.log("lastTime " + lastTime)
                         }
                         sumData.push({
@@ -190,10 +204,12 @@
                 var maxVal = Math.max(...numbericData);
                 var minVal = Math.min(...numbericData);
              var elemP = document.createElement('p');
-                if (dataType == "Room_Occupancy") {
-                    elemP.innerHTML = "Total Time: " + totalTime + ", Total Cost: $" + cost + "</p>"
-                } else {
-                    elemP.innerHTML = "<p>Max: " + maxVal + ", Min: " + minVal
+                if (dataType == "Room_Occupancy" || dataType == "Aircon_Status") {
+                    elemP.innerHTML = "<p> Time and Cost </p> <ul> <li> Total Time: " + totalTime + "</li> <li> Total Cost: $" +Number(cost.toFixed(2)) + "</li> </ul>"
+                } else if (dataType == "Temperature" || dataType == "Light") {
+                    elemP.innerHTML = "<p>Min And Max:</p>  <ul> <li> Max: " + maxVal + "</li> <li> Min: " + minVal +"</li></ul>"
+                } else if (dataType == "Humidity") {
+                    elemP.innerHTML = "<p>Min And Max:</p>  <ul> <li> Max: " + maxVal + "%</li> <li> Min: " + minVal + "%</li></ul>"
                 }
 
             document.body.appendChild(elemP);
@@ -250,7 +266,7 @@
               dataSource: {
                 chart: {
                   caption: dataType + " - " + devID,
-                  subCaption: "Number of Samples Taken by DreamTeam.",
+                  subCaption: subtitle[dataType],
                   subCaptionFontBold: "0",
                   captionFontSize: "20",
                   subCaptionFontSize: "17",
@@ -266,7 +282,7 @@
                   showPlotBorder: "0",
                   showAlternateHGridColor: "0",
                   usePlotGradientColor: "0",
-                  paletteColors: "#6AC1A5",
+                  paletteColors: "#8e7cc3",
                   showValues: "0",
                   divLineAlpha: "5",
                   showAxisLines: "1",
@@ -352,8 +368,8 @@
                 dataFormat: "json",
                 dataSource: {
                   chart: {
-                    caption: dataType + " - " + devID + " - Summary",
-                    subCaption: "Number of Samples Taken by DreamTeam.",
+                    caption: dataType + " - " + devID + " - Over Time",
+                    subCaption: subtitle[dataType] + " - Over Time",
                     subCaptionFontBold: "0",
                     captionFontSize: "20",
                     subCaptionFontSize: "17",
@@ -369,7 +385,7 @@
                     showPlotBorder: "0",
                     showAlternateHGridColor: "0",
                     usePlotGradientColor: "0",
-                    paletteColors: "#6AC1A5",
+                    paletteColors: "#8e7cc3",
                     showValues: "0",
                     divLineAlpha: "5",
                     showAxisLines: "1",
@@ -410,7 +426,7 @@
               elemDiv.id = dataType + devID + "Occupancy"
               elemDiv.className = "row"
               content.append(elemDiv);
-              elemDiv.innerHTML = 
+              elemDiv.innerHTML =
               console.log(numbericData[numbericData.length - 1])
               var gaugeChart = new FusionCharts({
           type: "bulb",
@@ -424,7 +440,7 @@
                     upperlimit: "1",
                     lowerlimit: "0",
                     caption: dataType + " - " + devID,
-                    subCaption: "Number of Samples Taken by DreamTeam.",
+                    subCaption: "Current Room Occupancy",
                     subCaptionFontBold: "0",
                     captionFontSize: "20",
                     subCaptionFontSize: "17",
@@ -469,16 +485,17 @@
             }
           }
         }
-        
+
 
     </script>
-  </head>
+</head>
 
-  <body class="container-fluid">
-      <div class="row">
-          <div class="col-xl-2 col-lg-1 col-md-1 col-sm-0"></div>
-          <div class="col-xl-8 col-lg-10 col-md-10 col-sm-12" id="content"></div>
-          <div class="col-xl-2 col-lg-1 col-md-1 col-sm-0"></div>
-      </div>
-  </body>
+<body class="container-fluid">
+    <div><h1> - Smart Room Prototype -  </h1></div>
+    <div class="row">
+        <div class="col-xl-2 col-lg-1 col-md-1 col-sm-0"></div>
+        <div class="col-xl-8 col-lg-10 col-md-10 col-sm-12" id="content"></div>
+        <div class="col-xl-2 col-lg-1 col-md-1 col-sm-0"></div>
+    </div>
+</body>
 </html>

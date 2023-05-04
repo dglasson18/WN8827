@@ -6,11 +6,18 @@ div {
     color: #444444;
 }
 
-p{
+p {
     font-weight: bold;
 }
 
-ul{
+ul {
     list-style-type: none;
     font-weight: normal;
+}
+
+h1 {
+    text-align: center;
+    padding-top: 10px;
+    background-color: #ece8f3;
+    font-family: 'Times New Roman', 'Times New Roman',serif;
 }
