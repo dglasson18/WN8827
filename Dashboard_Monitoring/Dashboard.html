@@ -205,7 +205,7 @@
                 var minVal = Math.min(...numbericData);
              var elemP = document.createElement('p');
                 if (dataType == "Room_Occupancy" || dataType == "Aircon_Status") {
-                    elemP.innerHTML = "<p> Time and Cost </p> <ul> <li> Total Time: " + totalTime + "</li> <li> Total Cost: $" +Number(cost.toFixed(2)) + "</li> </ul>"
+                    elemP.innerHTML = "<p> Time and Cost </p> <ul> <li> Total Time: " + Math.round(totalTime/60) + " Minutes</li> <li> Total Cost: $" +Number(cost.toFixed(2)) + "</li> </ul>"
                 } else if (dataType == "Temperature" || dataType == "Light") {
                     elemP.innerHTML = "<p>Min And Max:</p>  <ul> <li> Max: " + maxVal + "</li> <li> Min: " + minVal +"</li></ul>"
                 } else if (dataType == "Humidity") {
