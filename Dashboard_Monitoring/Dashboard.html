@@ -404,20 +404,40 @@
               });
               summaryChart.render();
             }
-          }
-        }
-        var gaugeChart = new FusionCharts({
+
+            if (dataType == "Room_Occupancy"){
+              elemDiv = document.createElement('div');
+              elemDiv.id = dataType + devID + "Occupancy"
+              elemDiv.className = "row"
+              content.append(elemDiv);
+              elemDiv.innerHTML = 
+              console.log(numbericData[numbericData.length - 1])
+              var gaugeChart = new FusionCharts({
           type: "bulb",
                 id: "bulbGauge",
-                renderAt: "gaugeChart",
-                width: "200",
-                height: "200",
+                renderAt: elemDiv.id,
+                width: "750",
+                height: "400",
                 dataFormat: "json",
                 dataSource: {
                   chart: {
-                    caption: "Room Occupancy Status",
                     upperlimit: "1",
                     lowerlimit: "0",
+                    caption: dataType + " - " + devID,
+                    subCaption: "Number of Samples Taken by DreamTeam.",
+                    subCaptionFontBold: "0",
+                    captionFontSize: "20",
+                    subCaptionFontSize: "17",
+                    captionPadding: "15",
+                    captionFontColor: "#8C8C8C",
+                    baseFontSize: "14",
+                    baseFont: "Barlow",
+                    canvasBgAlpha: "0",
+                    bgColor: "#FFFFFF",
+                    bgAlpha: "100",
+                    showBorder: "0",
+                    showCanvasBorder: "0",
+                    showPlotBorder: "0",
                     theme: "fusion"
                   },
                   colorrange:{
@@ -435,7 +455,7 @@
                  }
                 ]
                   },
-                  value: "1"
+                  value: numbericData[numbericData.length - 1]
               },
               "events":{
                 "rendered": function(evtObj, argObj){
@@ -445,7 +465,11 @@
       }
     }});
     gaugeChart.render();
-        };
+        }
+            }
+          }
+        }
+        
 
     </script>
   </head>
