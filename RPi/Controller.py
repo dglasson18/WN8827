@@ -266,7 +266,9 @@ while True:
                                                 ser.write(("D01TEMPG").encode()) #Turn on green led indicating air conditioner off
                                         lockState = Message[2]
                                         #don't need to send any messages, just update state and firebase
+                                        SampleCounts[Message[1]] += 1
                                         update_firebase_keypad_lock_status(Message[2], Message[0], current_time_string, SampleCounts[Message[1]])
+                                        
                                 else:
                                         print("No case was triggered")
 

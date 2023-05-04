@@ -61,12 +61,15 @@ void SerialPrint(int toPrint, int Debug);
 void SerialPrint(unsigned int toPrint, int Debug);
 void SerialPrint(float toPrint, int Debug);
 
+float time = 0;
+
 void setup(){
   XBee.begin(9600);
   if (DEBUG) {
     Serial.begin(9600);
   }
   pinMode(BUZZERPIN, OUTPUT);
+  time = millis();
 }
 
 void loop(){
@@ -76,26 +79,29 @@ void loop(){
       input += key;
       if (input.length() == LockPin.length()){
         if (input == LockPin) {
-          Serial.println("Locking");
+          SerialPrint("Locking", DEBUG);
           XBee.readString();
           send_data(DeviceID, "KEYP", String("1"));
+          time = millis();
           locked = 1;
           delay(1000);
         }
         else if (input == UnlockPin) {
-          Serial.println("Unlocking");
+          SerialPrint("Unlocking", DEBUG);
           XBee.readString();
           send_data(DeviceID, "KEYP", String("0"));
           locked = 0;
           noTone(BUZZERPIN);
+          time = millis();
           delay(1000);
         }
         else {
-          Serial.println("Invalid Pin");
+          SerialPrint("Invalid Pin", DEBUG);
           delay(1000);
         }
         input = "";
       }
+      SerialPrint(input, DEBUG);
     }
     else {
       input = "";
@@ -103,5 +109,11 @@ void loop(){
   }
   if (locked) {
     receive_data();
+  }
+  if (millis() - time > 60000)
+  {
+    XBee.readString();
+    send_data(DeviceID, "KEYP", String(locked));
+    time = millis();
   }
 }
